@@ -1,0 +1,28 @@
+{
+  "entities": {
+    "Item": {
+      "title": "Item",
+      "description": "A lost or found item report",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the item" },
+        "description": { "type": "string", "description": "Detailed description" },
+        "category": { "type": "string", "description": "Item category" },
+        "type": { "type": "string", "enum": ["lost", "found"], "description": "Report type" },
+        "location": { "type": "string", "description": "Where it was lost or found" },
+        "date": { "type": "string", "format": "date", "description": "Date of incident" },
+        "contactName": { "type": "string", "description": "Name of the reporter" },
+        "contactPhone": { "type": "string", "description": "Phone number of the reporter" },
+        "imageUrl": { "type": "string", "format": "uri", "description": "Optional image URL" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the report was created" }
+      },
+      "required": ["title", "description", "category", "type", "location", "date", "contactName", "contactPhone"]
+    }
+  },
+  "firestore": {
+    "/items/{itemId}": {
+      "schema": "Item",
+      "description": "Collection of lost and found items"
+    }
+  }
+}

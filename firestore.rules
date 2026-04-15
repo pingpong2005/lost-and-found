@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isValidItem(data) {
+      return data.title is string && data.title.size() > 0 &&
+             data.description is string && data.description.size() > 0 &&
+             data.type in ['lost', 'found'] &&
+             data.category is string &&
+             data.location is string &&
+             data.contactName is string &&
+             data.contactPhone is string;
+    }
+
+    match /items/{itemId} {
+      // Allow everyone to read items
+      allow read: if true;
+      
+      // Allow creation for anyone (anonymous or signed in)
+      // This matches the "simple" requirement
+      allow create: if isValidItem(request.resource.data);
+      
+      // Allow update/delete if the user is the owner
+      allow update, delete: if isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+  }
+}
