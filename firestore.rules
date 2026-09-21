@@ -24,8 +24,11 @@ service cloud.firestore {
       // This matches the "simple" requirement
       allow create: if isValidItem(request.resource.data);
       
-      // Allow update/delete if the user is the owner
-      allow update, delete: if isAuthenticated() && request.auth.uid == resource.data.uid;
+      // Allow update if the user is the owner
+      allow update: if isAuthenticated() && request.auth.uid == resource.data.uid;
+      
+      // Allow delete only if the user is the owner
+      allow delete: if isAuthenticated() && request.auth.uid == resource.data.uid;
     }
   }
 }

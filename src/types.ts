@@ -12,6 +12,7 @@ export interface Item {
   contactPhone: string;
   createdAt: string;
   imageUrl?: string;
+  uid?: string;
 }
 
 export interface ItemFormData {

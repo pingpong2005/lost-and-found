@@ -4,6 +4,7 @@ import { Item } from '@/types';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { api } from '@/services/api';
+import { AnimatePresence } from 'motion/react';
 
 export default function Home() {
   const [recentItems, setRecentItems] = useState<Item[]>([]);
@@ -22,6 +23,11 @@ export default function Home() {
     };
     fetchItems();
   }, []);
+
+  const handleRemove = async (id: string) => {
+    await api.deleteItem(id);
+    setRecentItems(prev => prev.filter(item => item.id !== id));
+  };
 
   return (
     <div className="space-y-12">
@@ -48,9 +54,11 @@ export default function Home() {
               <div key={i} className="card h-64 animate-pulse bg-gray-100" />
             ))
           ) : (
-            recentItems.map(item => (
-              <ItemCard key={item.id} item={item} />
-            ))
+            <AnimatePresence mode="popLayout">
+              {recentItems.map(item => (
+                <ItemCard key={item.id} item={item} onRemove={handleRemove} />
+              ))}
+            </AnimatePresence>
           )}
         </div>
       </section>

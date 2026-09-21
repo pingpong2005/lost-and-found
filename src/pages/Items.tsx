@@ -3,6 +3,7 @@ import ItemCard from '@/components/ItemCard';
 import { Item, ItemType } from '@/types';
 import { cn } from '@/lib/utils';
 import { api } from '@/services/api';
+import { AnimatePresence } from 'motion/react';
 
 export default function Items() {
   const [items, setItems] = useState<Item[]>([]);
@@ -22,6 +23,11 @@ export default function Items() {
     };
     fetchItems();
   }, []);
+
+  const handleRemove = async (id: string) => {
+    await api.deleteItem(id);
+    setItems(prev => prev.filter(item => item.id !== id));
+  };
 
   const filteredItems = filter === 'all' 
     ? items 
@@ -57,13 +63,15 @@ export default function Items() {
             <div key={i} className="card h-64 animate-pulse bg-gray-100" />
           ))
         ) : (
-          filteredItems.map(item => (
-            <ItemCard key={item.id} item={item} />
-          ))
+          <AnimatePresence mode="popLayout">
+            {filteredItems.map(item => (
+              <ItemCard key={item.id} item={item} onRemove={handleRemove} />
+            ))}
+          </AnimatePresence>
         )}
       </div>
 
-      {filteredItems.length === 0 && (
+      {!loading && filteredItems.length === 0 && (
         <div className="text-center py-20 bg-white rounded-[32px] border border-dashed border-gray-200">
           <p className="text-muted">No items found matching your filter.</p>
         </div>

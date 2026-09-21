@@ -3,6 +3,7 @@ import SearchBar from '@/components/SearchBar';
 import ItemCard from '@/components/ItemCard';
 import { Item } from '@/types';
 import { api } from '@/services/api';
+import { AnimatePresence } from 'motion/react';
 
 export default function Search() {
   const [query, setQuery] = useState('');
@@ -38,6 +39,11 @@ export default function Search() {
     setResults(filtered);
   }, [query, items]);
 
+  const handleRemove = async (id: string) => {
+    await api.deleteItem(id);
+    setItems(prev => prev.filter(item => item.id !== id));
+  };
+
   return (
     <div className="space-y-12">
       <div className="text-center space-y-4">
@@ -53,9 +59,11 @@ export default function Search() {
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {results.map(item => (
-              <ItemCard key={item.id} item={item} />
-            ))}
+            <AnimatePresence mode="popLayout">
+              {results.map(item => (
+                <ItemCard key={item.id} item={item} onRemove={handleRemove} />
+              ))}
+            </AnimatePresence>
           </div>
 
           {results.length === 0 && (
